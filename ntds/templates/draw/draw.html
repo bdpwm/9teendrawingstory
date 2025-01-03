@@ -1,82 +1,82 @@
 {% load static %}
-<!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>DRAW</title>
-        <link rel="stylesheet" href="{% static "css/draw.css" %}">
-        <link rel="icon" type="image/x-icon" href="{% static 'icons/home.svg' %}">
-    </head>
-    <body>
-      <div id="loader">
-        <div class="ball"></div>
-        <div class="ball"></div>
-        <div class="ball"></div>
-        <div class="ball"></div>
-        <div class="ball"></div>
-      </div>
-      <div id='content'>
-        <div class="topbar-controls">
-          <div class="left-controls">
-            <a href="{% url 'index' %}" class="home-icon">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>DRAW</title>
+    <link rel="stylesheet" href="{% static "css/draw.css" %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'icons/home.svg' %}">
+  </head>
+  <body>
+      <div id="brush-cursor"></div>
+      <div class="toolbar">
+          <a class="tool-btn" href="{% url 'index' %}" class="homeIcon">
               <img src="{% static 'icons/home.svg' %}" alt="home" class='ico'>
-            </a>
-            <input type="color" id="colorPicker" value="#ffffff">
-            <input type="range" id="lineWidth" min="1" max="10" value="3">
-            <button id="undoBtn" class='undo'></button>
-            <button id="redoBtn" class='redo'></button>
-            <img src="{% static 'icons/brush.svg' %}" alt="brush" class='ico'>
-            <label class="switch">
-                <input type="checkbox" id="modeSwitch">
-                <span class="slider"></span>
-            </label>
-            <img src="{% static 'icons/eraser.svg' %}" alt="eraser" class='ico'>
+          </a>
+          <button class="tool-btn" id="brushPencil">✏️ Brush</button>
+          <button class="tool-btn" id="eraser">🧽 Eraser</button>
+          <div class="separator"></div>
+          <input type="color" id="colorPicker" value="#000000">
+          <input type="range" id="sizePicker" min="1" max="50" value="5">
+          <div class="separator"></div>
+          <button class="tool-btn" id="undo" disabled>↩️</button>
+          <button class="tool-btn" id="redo" disabled>↪️</button>
+          <button class="tool-btn" id="clear">🗑️</button>
+          <div class="right-tools">
+              <input type="color" id="bgColor" value="#ffffff" title="Background Color">
+              <button class="tool-btn" id="save">💾</button>
           </div>
-          <div class="right-controls">
-              <button id="download">
-                <img src="{% static 'icons/download.svg' %}" alt="download" class='ico'>
-              </button>
-              <button id="clearBtn" class="clear">Clear</button>
-              <button id="openModalBtn" class="save">Save</button>
+      </div>
+      <canvas id="canvas"></canvas>
+  
+      <div class="modal-overlay" id="save-modal">
+          <div class="modal">
+              <h2>Save Drawing</h2>
+              <div class="modal-field">
+                  <label for="drawing-title">Title</label>
+                  <input type="text" id="drawing-title" placeholder="Enter drawing title">
+              </div>
+              <div class="modal-field">
+                  <label for="drawing-description">Description</label>
+                  <textarea id="drawing-description" placeholder="Enter drawing description"></textarea>
+              </div>
+              <div class="modal-buttons">
+                  <button class="modal-btn cancel" id="cancel-save">Cancel</button>
+                  <button class="modal-btn save" id="confirm-save">Save</button>
+              </div>
           </div>
-        </div>
-
-
-        {% if user.is_authenticated %}
-        <div id="openModal" class="save-window">
-            <div>
-              <button id='closeModalBtn' title="Close" class="save-window-close">Close</button>
-              <h1>Save your drawing</h1>
-              <br>
-              <form id="saveDrawing">
-                <label for="title">Title</label>
-                <br>
-                <input type="text" id="title" name="title" class="title" required><br><br>
-                <label for="description">Description</label>
-                <input type="text" id="description" name="description" class="description" required><br><br>
-                <input type="submit" value="Save" class="save-button">
-              </form>
-            </div>
+      </div>
+  
+      {% if user.is_authenticated %}
+      <div class="modal-overlay" id="login-prompt-modal">
+          <div class="modal">
+              <h2>Login Required</h2>
+              <p style="margin-bottom: 20px; color: #666;">To save your drawings, please log in or create an account.</p>
+              <div class="modal-buttons">
+                  <a class="modal-btn login" href="{% url 'login' %}?next={{ request.path }}">Login</a>
+                  <a class="modal-btn register" href="{% url 'signup' %}?next={{ request.path }}">Signup</a>
+                  <button class="modal-btn cancel" id="cancel-login-prompt">Cancel</button>
+              </div>
           </div>
-          <div id="uploadMessage" style='display: none;'></div>
-        {% else %}
-        <div id="openModal" class="save-window">
+      </div>
+      {% else %}
+      <div id="openModal" class="modal-overlay">
           <div>
             <button id='closeModalBtn' title="Close" class="save-window-close">Close</button>
-            <h1>Sign up or</h1>
-            <h1>login to</h1>
-            <h1>save your drawing</h1>
+            <h1>Save your drawing</h1>
             <br>
-            <a href="{% url 'login' %}?next={{ request.path }}">Login</a>
-            <a href="{% url 'signup' %}?next={{ request.path }}">Signup</a>
-
+            <form id="saveDrawing">
+              <label for="title">Title</label>
+              <br>
+              <input type="text" id="title" name="title" class="title" required><br><br>
+              <label for="description">Description</label>
+              <input type="text" id="description" name="description" class="description" required><br><br>
+              <input type="submit" value="Save" class="save-button">
+            </form>
           </div>
         </div>
-        {% endif %}
-        <canvas id="canvas"></canvas>
-        </div>
-        <script src="{% static "js/uploadDrawing.js" %}"></script>
-        <script src="{% static "js/createDrawing.js" %}"></script>
-    </body>
+        <div id="uploadMessage" style='display: none;'></div>
+      {% endif %}
+  <script src="{% static 'js/createDrawing.js' %}"></script>
+  </body>
 </html>
