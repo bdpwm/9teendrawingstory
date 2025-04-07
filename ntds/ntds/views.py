@@ -17,6 +17,7 @@ class IndexView(TemplateView):
         
         context['images'] = page_obj.object_list
         context['has_next'] = page_obj.has_next()
+        context['images_count'] = drawings.count()
         
         return context
 

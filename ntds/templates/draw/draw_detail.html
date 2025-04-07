@@ -6,11 +6,19 @@
 {% endblock head %}
 
 {% block content %}
-<div class="grid-item">
-    <div class="drawing-container">
-        <img class='drawing' src="{{ drawing.imglink }}" alt="{{ drawing.title }}">
-        <div class="avatar-overlay">
-            <h3>{{ drawing.title }}</h3>
+<div class="detail-container">
+    <div class="detail-card">
+        <div class="image-wrapper">
+            <img class="drawing-image" src="{{ drawing.imglink }}" alt="{{ drawing.title }}">
+        </div>
+        <div class="content-wrapper">
+            <h1 class="drawing-title">{{ drawing.title }}</h1>
+            {% if drawing.description %}
+            <p class="drawing-description">{{ drawing.description }}</p>
+            {% endif %}
+            <div class="drawing-meta">
+                <span class="creation-date">Created {{ drawing.created_at|date:"F j, Y" }}</span>
+            </div>
         </div>
     </div>
 </div>
