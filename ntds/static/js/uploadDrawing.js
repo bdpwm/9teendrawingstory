@@ -1,56 +1,86 @@
 document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('saveDrawing').addEventListener('submit', function(event) {
-        event.preventDefault();
+    const saveModal = document.getElementById('save-modal');
+    const saveForm = document.getElementById('saveDrawingForm');
+    const canvas = document.getElementById('canvas');
 
-        const url = 'create/';
+    document.getElementById('save').addEventListener('click', () => {
+        saveModal.style.display = 'flex';
+    });
+
+    document.getElementById('cancel-save').addEventListener('click', () => {
+        saveModal.style.display = 'none';
+        saveForm.reset();
+    });
+
+    document.getElementById('cancel-save-btn').addEventListener('click', () => {
+        saveModal.style.display = 'none';
+        saveForm.reset();
+    });
+
+    saveModal.addEventListener('click', (e) => {
+        if (e.target === saveModal) {
+            saveModal.style.display = 'none';
+            saveForm.reset();
+        }
+    });
+
+    saveForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const title = document.getElementById('drawing-title').value;
+        const description = document.getElementById('drawing-description').value;
         const dataURL = canvas.toDataURL('image/png');
-        const blob = dataURLToBlob(dataURL);
+        
+        const blob = await dataURLToBlob(dataURL);
 
         const formData = new FormData();
         formData.append('image', blob, 'drawing.png');
-        formData.append('title', document.getElementById('title').value);
-        formData.append('description', document.getElementById('description').value);
+        formData.append('title', title);
+        formData.append('description', description);
 
-        fetch(url, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            const messageElement = document.getElementById('uploadMessage');
-            
-            if (data.message === 'Image') {
-                messageElement.textContent = 'Image uploaded!';
-                messageElement.style.display = 'block';
+        try {
+            const response = await fetch('/draw/create/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            });
 
+            const data = await response.json();
+
+            if (response.ok) {
+                showToast('Drawing saved successfully!');
                 setTimeout(() => {
                     window.location.href = '/';
                 }, 1500);
             } else {
-                messageElement.textContent = 'Upload failed, try again later.';
-                messageElement.style.display = 'block';
+                showToast(data.error || 'Failed to save drawing', 'error');
             }
-        })
-        .catch(error => {
-            const messageElement = document.getElementById('uploadMessage');
-            messageElement.textContent = 'Upload failed, try again later.';
-            messageElement.style.display = 'block';
-            console.error('Image not uploaded:', error);
-        });
+        } catch (error) {
+            console.error('Error:', error);
+            showToast('Failed to save drawing', 'error');
+        }
+
+        saveModal.style.display = 'none';
+        saveForm.reset();
     });
 
-    function dataURLToBlob(dataURL) {
-        const [header, data] = dataURL.split(',');
-        const mime = header.match(/:(.*?);/)[1];
-        const binary = atob(data);
-        const array = [];
-        for (let i = 0; i < binary.length; i++) {
-            array.push(binary.charCodeAt(i));
-        }
-        return new Blob([new Uint8Array(array)], { type: mime });
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast ${type}`;
+        toast.style.display = 'block';
+        
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    async function dataURLToBlob(dataURL) {
+        const res = await fetch(dataURL);
+        const blob = await res.blob();
+        return blob;
     }
 
     function getCookie(name) {

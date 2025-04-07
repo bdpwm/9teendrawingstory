@@ -168,20 +168,20 @@ const canvas = document.getElementById('canvas');
   });
   
   document.getElementById('clear').addEventListener('click', () => {
-      ctx.fillStyle = document.getElementById('bgColor').value;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      states = [];
-      currentStateIndex = -1;
+      clearCanvas();
       saveState();
+      saveToLocalStorage();
   });
   
   document.getElementById('undo').addEventListener('click', undo);
   document.getElementById('redo').addEventListener('click', redo);
   
   document.getElementById('bgColor').addEventListener('change', (e) => {
+      ctx.globalAlpha = 1;
       ctx.fillStyle = e.target.value;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       saveState();
+      saveToLocalStorage();
   });
   
   document.body.addEventListener('touchstart', (e) => {
@@ -274,7 +274,6 @@ const canvas = document.getElementById('canvas');
   const loginPromptModal = document.getElementById('login-prompt-modal');
   const saveBtn = document.getElementById('save');
   const cancelSaveBtn = document.getElementById('cancel-save');
-  const confirmSaveBtn = document.getElementById('confirm-save');
   
   saveBtn.addEventListener('click', () => {
       loginPromptModal.style.display = 'flex';
@@ -290,21 +289,7 @@ const canvas = document.getElementById('canvas');
   document.getElementById('cancel-login-prompt').addEventListener('click', () => {
       loginPromptModal.style.display = 'none';
   });
-  
-  confirmSaveBtn.addEventListener('click', () => {
-      const title = document.getElementById('drawing-title').value;
-      const description = document.getElementById('drawing-description').value;
-      
-      console.log({
-          title,
-          description,
-          imageData: canvas.toDataURL()
-      });
-      
-      saveModal.style.display = 'none';
-      document.getElementById('drawing-title').value = '';
-      document.getElementById('drawing-description').value = '';
-  });
+
   
   saveModal.addEventListener('click', (e) => {
       if (e.target === saveModal) {
@@ -358,10 +343,12 @@ const canvas = document.getElementById('canvas');
   });
   
   window.addEventListener('load', loadFromLocalStorage);
-  
-  loginPromptModal.addEventListener('click', (e) => {
-      if (e.target === loginPromptModal) {
-          loginPromptModal.style.display = 'none';
-      }
-  });
+
+  function clearCanvas() {
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = document.getElementById('bgColor').value;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      states = [];
+      currentStateIndex = -1;
+  }
 });

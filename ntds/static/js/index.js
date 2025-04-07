@@ -22,24 +22,7 @@ window.onload = displayRandomQuote;
 let currentPage = 1;
 let hasNextPage = true;
 
-window.onresize = function() {
-    const documentHeight = document.body.offsetHeight;
-    const windowHeight = window.innerHeight;
 
-    if (windowHeight >= documentHeight) {
-        loadMoreImages();
-    }
-};
-
-
-
-window.onscroll = function() {
-    window.onscroll = _.throttle(function() {
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
-            loadMoreImages();
-        }
-    }, 300);
-};
 function loadMoreImages() {
     if (!hasNextPage) return;
 
@@ -48,28 +31,41 @@ function loadMoreImages() {
     fetch(`/load-drawings/?page=${currentPage}`)
         .then(response => response.json())
         .then(data => {
+
             const grid = document.getElementById('grid');
             data.data.forEach(image => {
                 const gridItem = document.createElement('div');
                 gridItem.classList.add('grid-item');
+                gridItem.setAttribute('data-aos', 'fade-up');
+                gridItem.setAttribute('data-aos-duration', '800');
                 
                 gridItem.innerHTML = `
-                    <a href="draw/${image.pagelink}">
-                        <div class="drawing-container">
-                            <img src="${image.imglink}" alt="${image.title}">
-                            <div class="avatar-overlay">
-                                <img class="avatar-img" src="${image.avatarlink}" alt="User Avatar">
+                    <div class="card">
+                        <div class="card-image">
+                            <a href="/draw/${image.pagelink}">
+                                <img src="${image.imglink}" alt="${image.title}">
+                            </a>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-header">
+                                <h3 class="card-title">${image.title}</h3>
                             </div>
                         </div>
-                    </a>
-                    <h3>${image.title}</h3>
+                    </div>
                 `;
                 grid.appendChild(gridItem);
             });
 
             hasNextPage = data.has_next;
+            AOS.refresh();
         })
         .catch(error => {
             console.error('Error loading more images:', error);
         });
 }
+
+window.addEventListener('scroll', _.throttle(function() {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+        loadMoreImages();
+    }
+}, 300));
