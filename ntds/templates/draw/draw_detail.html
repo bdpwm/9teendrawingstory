@@ -13,9 +13,7 @@
         </div>
         <div class="content-wrapper">
             <h1 class="drawing-title">{{ drawing.title }}</h1>
-            {% if drawing.description %}
             <p class="drawing-description">{{ drawing.description }}</p>
-            {% endif %}
             <div class="drawing-meta">
                 <span class="creation-date">Created {{ drawing.created_at|date:"F j, Y" }}</span>
             </div>
