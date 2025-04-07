@@ -27,7 +27,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users',
     'draw',
 ]
 
@@ -121,23 +120,6 @@ INTERNAL_IPS = [
 ]
 
 
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -180,8 +162,3 @@ CF_ACCESS_KEY = os.getenv('CF_ACCESS_KEY')
 CF_SECRET_ACCESS_KEY = os.getenv('CF_SECRET_ACCESS_KEY')
 CF_REGION = 'us-east-1'
 CF_SERVICE = 's3'
-
-
-LOGIN_REDIRECT_URL = "index" 
-LOGOUT_REDIRECT_URL = "index"
-AUTH_USER_MODEL = 'users.User'
