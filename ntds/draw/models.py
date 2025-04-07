@@ -1,14 +1,10 @@
 from django.db import models
-from users.models import User
 from .utils import generate_link
 
 class Drawing(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=200, null=True)
-    likes = models.IntegerField(default=0)
     pagelink = models.CharField(max_length=8, blank=True)
-    # comments = manytomanyfield
     created_at = models.DateTimeField(auto_now_add=True)
     imgname = models.CharField(max_length=64)
     imglink = models.URLField()

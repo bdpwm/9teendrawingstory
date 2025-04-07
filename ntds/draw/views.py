@@ -32,7 +32,6 @@ class DrawingCreateView(CreateView, CF_ACCESS):
             return JsonResponse(cf_upload, status=500)
 
         self.object = form.save(commit=False)
-        self.object.owner = self.request.user
         self.object.imgname = image.name
         self.object.imglink = CF_GET_URL + image.name
         self.object.save()
