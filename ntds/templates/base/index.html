@@ -5,32 +5,47 @@
 
 {% block head %}
     <link rel="stylesheet" href="{% static 'css/index.css'%}">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div id="quote" class="quote">Loading quote...</div>
+    <div class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Welcome to 9teen Drawing Story</h1>
+            <p class="hero-subtitle">Create, Share, Inspire</p>
+            <div id="quote" class="quote">Loading quote...</div>
+            <a href="{% url 'draw' %}" class="cta-button">Start Drawing</a>
+        </div>
     </div>
 
-    <div class="grid" id="grid">
-        {% for image in images %}
-        <div class="grid-item">
-            <a href="{% url 'draw-detail' image.pagelink %}">
-            <div class="drawing-container">
-                <img src="{{ image.imglink }}" alt="{{ image.title }}">
-                <div class="avatar-overlay">
-                    <img class="avatar-img" src="{{ image.owner.avatarlink }}" alt="User Avatar">
+    <div class="gallery-section">
+        <h2 class="section-title">Latest Masterpieces</h2>
+        <div class="grid" id="grid">
+            {% for image in images %}
+            <div class="grid-item" data-aos="fade-up" data-aos-duration="800">
+                <div class="card">
+                    <div class="card-image">
+                        <a href="{% url 'draw-detail' image.pagelink %}">
+                            <img src="{{ image.imglink }}" alt="{{ image.title }}">
+                        </a>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">{{ image.title }}</h3>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </a>
-            <h3>{{ image.title }}</h3>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
 {% endblock content %}
 
-
 {% block jscripts %}
-<script src="{% static 'js/index.js' %}"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+<script src="{% static 'js/index.js' %}"></script>
+<script>
+    AOS.init();
+</script>
 {% endblock jscripts %}

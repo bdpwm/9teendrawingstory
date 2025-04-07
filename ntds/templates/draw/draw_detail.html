@@ -10,8 +10,6 @@
     <div class="drawing-container">
         <img class='drawing' src="{{ drawing.imglink }}" alt="{{ drawing.title }}">
         <div class="avatar-overlay">
-            <a href="{% url 'profile-detail' drawing.owner.username %}"><img class="avatar-img" src="{{ drawing.owner.avatarlink }}" alt="User Avatar"></a>
-            <h3>{{ drawing.owner.username }}</h3>
             <h3>{{ drawing.title }}</h3>
         </div>
     </div>
